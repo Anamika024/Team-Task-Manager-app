@@ -17,8 +17,49 @@ A full-stack team task management web application built for the assignment requi
 - Admins can add/remove members and assign Admin or Member roles
 - Admins can create and update tasks
 - Members can view and update only their assigned tasks
-- Task fields: title, description, due date, priority, assignee, status
+- Task fields: title, description, due date, priority, assignees, status
 - Dashboard stats: total tasks, tasks by status, tasks per user, overdue tasks
+
+## Code Structure
+
+### Frontend
+
+- `frontend/src/main.jsx`: React app entry point.
+- `frontend/src/App.jsx`: top-level app state, authenticated layout, modal form actions, and page switching.
+- `frontend/src/api.js`: shared API client and token helpers.
+- `frontend/src/constants.js`: reusable status, priority, and color constants.
+- `frontend/src/routes.js`: sidebar route metadata used by the authenticated shell.
+- `frontend/src/pages/`: route-level screens:
+  - `AuthPage.jsx`: login and signup screen.
+  - `DashboardPage.jsx`: summary cards, status chart, team load, and recent tasks.
+  - `ProjectsPage.jsx`: project list and selected project summary.
+  - `BoardPage.jsx`: kanban board grouped by task status.
+  - `TeamPage.jsx`: project members and task counts.
+- `frontend/src/components/`: reusable UI pieces:
+  - `AppShell.jsx`: sidebar, header, navigation, and admin/member controls.
+  - `TaskCard.jsx`, `TaskRow.jsx`: task display variants.
+  - `Avatar.jsx`, `NavItem.jsx`, `ui.jsx`: shared small components.
+- `frontend/src/utils/taskUtils.js`: task assignee, overdue, initials, and title helpers.
+- `frontend/src/styles.css`: global app styles.
+
+### Backend
+
+- `backend/src/main/java/com/ethara/taskmanager/api/`: REST controllers and API error handling.
+- `backend/src/main/java/com/ethara/taskmanager/domain/`: JPA entities and enums.
+- `backend/src/main/java/com/ethara/taskmanager/repository/`: Spring Data repositories.
+- `backend/src/main/java/com/ethara/taskmanager/security/`: JWT, current-user lookup, and Spring Security config.
+- `backend/src/main/java/com/ethara/taskmanager/service/`: shared business rules, access checks, and starter workspace setup.
+- `backend/src/main/java/com/ethara/taskmanager/config/`: demo data seeding for an empty database.
+
+### Database Tables
+
+Hibernate creates the PostgreSQL schema from the JPA entities:
+
+- `users`: account profile, email, encrypted password, and role.
+- `projects`: project name, description, and creator.
+- `project_members`: project-to-user membership plus `ADMIN` or `MEMBER` role.
+- `tasks`: task title, description, due date, priority, status, and project.
+- `task_assignees`: many-to-many task assignment table so one task can be assigned to multiple users and one user can own many tasks.
 
 ## Local Setup
 
