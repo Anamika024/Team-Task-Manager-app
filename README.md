@@ -1,84 +1,99 @@
-# Team Task Manager
+# Taskflow
 
-A full-stack team task management web application built for the assignment requirements.
+Taskflow is a full-stack team task management app built with React, Spring Boot, and PostgreSQL.
+
+It helps teams create projects, add members, assign tasks, and track progress. The app has role-based access, so Admins can manage projects and tasks, while Members can only see and update their assigned work.
+
+## Live Links
+
+Live App: https://taskflow-frontend.up.railway.app
+
+API Base URL: https://taskflow-backend.up.railway.app/api
+
+## Screenshot
+
+![Taskflow Dashboard](./data/demo.png)
 
 ## Tech Stack
 
-- Frontend: React, Vite, lucide-react
-- Backend: Java 21, Spring Boot, Spring Security, Spring Data JPA
-- Database: PostgreSQL
-- Auth: JWT bearer tokens
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 18, Vite, CSS |
+| Backend | Java, Spring Boot 3, Spring Security |
+| Auth | JWT Bearer Token |
+| Database | PostgreSQL, Spring Data JPA |
+| Deployment | Railway |
 
 ## Features
 
-- Signup and login with secure BCrypt password hashing
-- JWT-protected REST APIs
-- Create projects; creator automatically becomes project Admin
-- Admins can add/remove members and assign Admin or Member roles
-- Admins can create and update tasks
-- Members can view and update only their assigned tasks
-- Task fields: title, description, due date, priority, assignees, status
-- Dashboard stats: total tasks, tasks by status, tasks per user, overdue tasks
+- User signup and login
+- JWT-based authentication
+- Role-based access for Admin and Member
+- Admin can create projects
+- Admin can add and remove members
+- Admin can create tasks
+- One task can be assigned to multiple members
+- Members can view only assigned projects and tasks
+- Members can update assigned task status
+- Dashboard shows total tasks, status count, user task count, and overdue tasks
+- Overdue tasks are highlighted automatically
 
-## Code Structure
+## Project Structure
 
-### Frontend
-
-- `frontend/src/main.jsx`: React app entry point.
-- `frontend/src/App.jsx`: top-level app state, authenticated layout, modal form actions, and page switching.
-- `frontend/src/api.js`: shared API client and token helpers.
-- `frontend/src/constants.js`: reusable status, priority, and color constants.
-- `frontend/src/routes.js`: sidebar route metadata used by the authenticated shell.
-- `frontend/src/pages/`: route-level screens:
-  - `AuthPage.jsx`: login and signup screen.
-  - `DashboardPage.jsx`: summary cards, status chart, team load, and recent tasks.
-  - `ProjectsPage.jsx`: project list and selected project summary.
-  - `BoardPage.jsx`: kanban board grouped by task status.
-  - `TeamPage.jsx`: project members and task counts.
-- `frontend/src/components/`: reusable UI pieces:
-  - `AppShell.jsx`: sidebar, header, navigation, and admin/member controls.
-  - `TaskCard.jsx`, `TaskRow.jsx`: task display variants.
-  - `Avatar.jsx`, `NavItem.jsx`, `ui.jsx`: shared small components.
-- `frontend/src/utils/taskUtils.js`: task assignee, overdue, initials, and title helpers.
-- `frontend/src/styles.css`: global app styles.
-
-### Backend
-
-- `backend/src/main/java/com/ethara/taskmanager/api/`: REST controllers and API error handling.
-- `backend/src/main/java/com/ethara/taskmanager/domain/`: JPA entities and enums.
-- `backend/src/main/java/com/ethara/taskmanager/repository/`: Spring Data repositories.
-- `backend/src/main/java/com/ethara/taskmanager/security/`: JWT, current-user lookup, and Spring Security config.
-- `backend/src/main/java/com/ethara/taskmanager/service/`: shared business rules, access checks, and starter workspace setup.
-- `backend/src/main/java/com/ethara/taskmanager/config/`: demo data seeding for an empty database.
-
-### Database Tables
-
-Hibernate creates the PostgreSQL schema from the JPA entities:
-
-- `users`: account profile, email, encrypted password, and role.
-- `projects`: project name, description, and creator.
-- `project_members`: project-to-user membership plus `ADMIN` or `MEMBER` role.
-- `tasks`: task title, description, due date, priority, status, and project.
-- `task_assignees`: many-to-many task assignment table so one task can be assigned to multiple users and one user can own many tasks.
+```txt
+taskflow/
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── utils/
+│       ├── api.js
+│       ├── App.jsx
+│       ├── constants.js
+│       ├── routes.js
+│       ├── main.jsx
+│       └── styles.css
+│
+└── backend/
+    └── src/main/java/com/ethara/taskmanager/
+        ├── api/
+        ├── config/
+        ├── domain/
+        ├── repository/
+        ├── security/
+        └── service/
+```
 
 ## Local Setup
 
-### Backend
+### Prerequisites
 
-Create a PostgreSQL database first:
+- Java 17 or above
+- Node.js 18 or above
+- PostgreSQL installed and running
+
+### Backend Setup
+
+Create PostgreSQL database:
 
 ```sql
 CREATE DATABASE team_task_manager;
 ```
 
-Default local connection:
+Run backend:
 
-- Database: `team_task_manager`
-- Username: `postgres`
-- Password: `postgres`
-- Port: `5432`
+```bash
+cd backend
+mvn spring-boot:run
+```
 
-If your PostgreSQL password or database name is different, set environment variables before running.
+Backend will run on:
+
+```txt
+http://localhost:8080
+```
+
+If your PostgreSQL username or password is different, set environment variables.
 
 PowerShell example:
 
@@ -86,21 +101,11 @@ PowerShell example:
 $env:DATABASE_URL="jdbc:postgresql://localhost:5432/team_task_manager"
 $env:DATABASE_USERNAME="postgres"
 $env:DATABASE_PASSWORD="your_postgres_password"
-```
 
-```bash
-cd backend
 mvn spring-boot:run
 ```
 
-Backend runs at `http://localhost:8080` by default. If another app is already using port `8080`, run it on `8081`:
-
-```bash
-cd backend
-java -jar target/team-task-manager-0.0.1-SNAPSHOT.jar --server.port=8081
-```
-
-### Frontend
+### Frontend Setup
 
 ```bash
 cd frontend
@@ -108,11 +113,65 @@ npm install
 npm run dev
 ```
 
-Frontend runs at `http://localhost:5173`.
+Frontend will run on:
 
-Create one account first, then create a project. To add teammates, those users must sign up first so the Admin can add them by email.
+```txt
+http://localhost:5173
+```
 
-On an empty database, the backend also creates demo data automatically:
+If backend URL is different, create `.env` file inside `frontend`:
+
+```env
+VITE_API_URL=http://localhost:8080/api
+```
+
+## Deployment on Railway
+
+I deployed this project using Railway with three services:
+
+1. PostgreSQL database
+2. Spring Boot backend
+3. React frontend
+
+Backend environment variables:
+
+```env
+DATABASE_URL=jdbc:postgresql://<host>:<port>/<database>
+DATABASE_USERNAME=<username>
+DATABASE_PASSWORD=<password>
+JWT_SECRET=<random-secret-key>
+CORS_ALLOWED_ORIGINS=https://taskflow-frontend.up.railway.app
+```
+
+Frontend environment variable:
+
+```env
+VITE_API_URL=https://taskflow-backend.up.railway.app/api
+```
+
+## API Endpoints
+
+| Method | Endpoint | Access |
+| --- | --- | --- |
+| POST | `/api/auth/signup` | Public |
+| POST | `/api/auth/login` | Public |
+| GET | `/api/auth/me` | Authenticated |
+| GET | `/api/projects` | Authenticated |
+| POST | `/api/projects` | Authenticated |
+| GET | `/api/projects/{id}/members` | Project Member |
+| POST | `/api/projects/{id}/members` | Admin |
+| DELETE | `/api/projects/{id}/members/{userId}` | Admin |
+| GET | `/api/tasks` | Authenticated |
+| POST | `/api/tasks` | Admin |
+| PUT | `/api/tasks/{id}` | Admin |
+| PATCH | `/api/tasks/{id}/status` | Assignee or Admin |
+| PATCH | `/api/tasks/{id}/assignee` | Admin |
+| DELETE | `/api/tasks/{id}` | Admin |
+| GET | `/api/dashboard` | Authenticated |
+
+## Test Credentials
+
+Demo accounts are created when the database is empty.
 
 | Role | Email | Password |
 | --- | --- | --- |
@@ -121,66 +180,43 @@ On an empty database, the backend also creates demo data automatically:
 | Member | `ravi@taskflow.com` | `password123` |
 | Member | `priya@taskflow.com` | `password123` |
 
-The demo admin sees sample projects, team members, dashboard stats, and assigned tasks immediately after login.
+## Database Tables
 
-If you only want temporary in-memory testing, run the old H2 mode:
+Main tables used in this project:
 
-```bash
-cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=h2
+```txt
+users
+projects
+project_members
+tasks
+task_assignees
 ```
 
-## Environment Variables
+`task_assignees` is used because one task can be assigned to multiple members.
 
-### Backend
+## Known Limitations
 
-| Name | Purpose | Local default |
-| --- | --- | --- |
-| `PORT` | Server port | `8080` |
-| `DATABASE_URL` | JDBC database URL | `jdbc:postgresql://localhost:5432/team_task_manager` |
-| `DATABASE_USERNAME` | Database username | `postgres` |
-| `DATABASE_PASSWORD` | Database password | `postgres` |
-| `DATABASE_DRIVER` | JDBC driver | `org.postgresql.Driver` |
-| `DDL_AUTO` | Hibernate schema mode | `update` |
-| `JWT_SECRET` | JWT signing secret | development fallback |
-| `JWT_EXPIRATION_MINUTES` | Token lifetime | `1440` |
-| `CORS_ALLOWED_ORIGINS` | Allowed frontend origins | `http://localhost:5173,http://localhost:3000` |
+- No email verification
+- No task comments
+- No file attachments
+- No notification system
+- Mobile layout can be improved more
+- More backend test cases can be added
 
-### Frontend
+## What I Would Improve
 
-| Name | Purpose | Local default |
-| --- | --- | --- |
-| `VITE_API_URL` | Backend API base URL | `http://localhost:8080/api` |
+If I get more time, I would like to add:
 
-## Railway Deployment
+- Email invitation for members
+- Comments under tasks
+- File upload for task attachments
+- Notification system
+- Search and filter for tasks
+- Better mobile responsive design
+- More backend and frontend tests
 
-Deploy as two Railway services:
+## Author
 
-1. Backend service from `backend/`
-   - Add a Railway PostgreSQL database.
-   - Set:
-     - `DATABASE_URL=jdbc:postgresql://<host>:<port>/<database>`
-     - `DATABASE_USERNAME=<postgres user>`
-     - `DATABASE_PASSWORD=<postgres password>`
-     - `DATABASE_DRIVER=org.postgresql.Driver`
-     - `JWT_SECRET=<long random secret>`
-     - `CORS_ALLOWED_ORIGINS=<frontend public URL>`
-2. Frontend service from `frontend/`
-   - Set `VITE_API_URL=<backend public URL>/api`.
-   - Railway will run the Vite build and serve the static app.
+Anamika Patel
 
-## Main API Routes
-
-- `POST /api/auth/signup`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-- `GET /api/projects`
-- `POST /api/projects`
-- `GET /api/projects/{projectId}/members`
-- `POST /api/projects/{projectId}/members`
-- `DELETE /api/projects/{projectId}/members/{userId}`
-- `GET /api/tasks`
-- `POST /api/tasks`
-- `PUT /api/tasks/{taskId}`
-- `PATCH /api/tasks/{taskId}/status`
-- `GET /api/dashboard`
+GitHub: [Anamika024](https://github.com/Anamika024)
