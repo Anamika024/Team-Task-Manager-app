@@ -6,9 +6,9 @@ It helps teams create projects, add members, assign tasks, and track progress. T
 
 ## Live Links
 
-Live App: https://taskflow-frontend.up.railway.app
+Frontend: https://taskflow-ui-production.up.railway.app
 
-API Base URL: https://taskflow-backend.up.railway.app/api
+Backend: https://taskflow-production-dadd.up.railway.app
 
 ## Screenshot
 
